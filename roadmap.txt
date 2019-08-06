@@ -1,0 +1,7 @@
+read the data into arrays and fix the broken frames DONE
+create the database and write the laser_scanner_data in one 'main' table DONE
+create a 'time' table with one timestamp for each frame DONE
+create a 'background' table, with the laser_id and azimuth as primary key duo, values are one coordinate set
+select all coordinates with common laser_id and azimuth and find the median
+save the median coordinate set in the 'background' table
+
