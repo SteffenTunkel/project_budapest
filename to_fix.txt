@@ -1,0 +1,3 @@
+get rid of dependency of no_vars
+delete database automatically when creating a new one
+fix timer problem

@@ -5,13 +5,18 @@
 import csv
 import os
 import sqlite3
+import timeit
 
-def read_files():
-    no_frames = 700             # bigger than the actual number
+
+def read_files(path):
+
+    rstart_time = timeit.timeit()
+
+    no_frames = 10             # bigger than the actual number
     no_points = 20000           # the actual number is not fixed per frame, but smaller than 20000 in any case
     no_coordinates = 7          # x,y,z -> 3 coordinates per point
     size_threshold = 1520000    # threshold for the detection of defect frames
-    path ='raw_data'  # path of the folder with the data
+    #path ='raw_data'  # path of the folder with the data
 
     # use of the data type range because integer is not iterable
     Data = [[[0 for k in range(no_coordinates)] for j in range(no_points)] for i in range(no_frames)]
@@ -72,7 +77,7 @@ def read_files():
                 defect_size = 0
                 frame_count += 1
 
-    print('Finish to read in the data.')
+    print("Finished to read in the data. Process took %3.6fs" % (timeit.timeit() - rstart_time))
 
     return [Data,Time]
 
@@ -82,12 +87,14 @@ def DEBUG_read_files():
     print(time_array[0])
     
 
-def create_and_fill_database():
-    
-    print('This function is overwriting main and time table in case they already exist.')
+def create_and_fill_database(path):
+
+    start_time = timeit.timeit()
+
+    print('Started creating the database.')
     
     # fill the data into arrays
-    [data_array, time_array] = read_files()
+    [data_array, time_array] = read_files(path)
 
     # create or connect to the database
     conn = sqlite3.connect('data.db')
@@ -105,50 +112,59 @@ def create_and_fill_database():
                 azimuth REAL,
                 distance_m REAL
                 )""" # not used if db exists
-    # c.execute(sql_command_to_create)
+    c.execute(sql_command_to_create)
 
     sql_command_to_create = """
                 CREATE TABLE time(
                 frame_no INTEGER,
                 timestamp REAL
                 )""" # not used if db exists
-    # c.execute(sql_command_to_create)
+    c.execute(sql_command_to_create)
 
-    
-    no_frames           = len(data_array)
+    conn.commit()
+
+    no_frames = len(data_array)
     no_points_per_frame = len(data_array[0])   
     # len(data_array[0][0]) => no_coordinates
     
     point_id = 0
     for i_f in range(no_frames): # i_f: index for frames
         for i_ppf in range(no_points_per_frame): # i_ppf: index for points per frame
+            if data_array[i_f][i_ppf][0] != 0.0:
 
-        if data_array[i_f][i_ppf][0] =! 0.0:
-            sql_command_to_fill = """
-                           INSERT INTO main VALUES(
-                                point_id, 
-                                i_f, 
-                                data_array[i_f][i_ppf][0],
-                                data_array[i_f][i_ppf][1],
-                                data_array[i_f][i_ppf][2],
-                                data_array[i_f][i_ppf][3],
-                                data_array[i_f][i_ppf][4],
-                                data_array[i_f][i_ppf][5],
-                                data_array[i_f][i_ppf][6]
-                            )"""
-            c.execute(sql_command_to_fill)
-            point_id = point_id + 1
+                sql_command_to_fill = 'INSERT INTO main VALUES('
+                sql_command_to_fill += str(point_id) + ','
+                sql_command_to_fill += str(i_f) + ','
+                sql_command_to_fill += str(data_array[i_f][i_ppf][0]) + ','
+                sql_command_to_fill += str(data_array[i_f][i_ppf][0]) + ','
+                sql_command_to_fill += str(data_array[i_f][i_ppf][0]) + ','
+                sql_command_to_fill += str(data_array[i_f][i_ppf][0]) + ','
+                sql_command_to_fill += str(data_array[i_f][i_ppf][0]) + ','
+                sql_command_to_fill += str(data_array[i_f][i_ppf][0]) + ','
+                sql_command_to_fill += str(data_array[i_f][i_ppf][0]) + ')'
+
+                c.execute(sql_command_to_fill)
+                point_id = point_id + 1
             
-        if data_array[i_f][0][0] =! 0.0:
-        sql_command_to_fill = """
-                           INSERT INTO time VALUES(
-                                i_f, 
-                                time_array[i_f]
-                            )"""
-        c.execute(sql_command_to_fill)
+        if data_array[i_f][0][0] != 0.0:
+
+            sql_command_to_fill = 'INSERT INTO time VALUES('
+            sql_command_to_fill += str(i_f) + ','
+            sql_command_to_fill += str(time_array[i_f]) + ')'
+
+            c.execute(sql_command_to_fill)
 
     conn.commit()
     conn.close()
+
+    print("Finished to create the database. Process took %0.6fs" % (timeit.timeit() - start_time))
+
     
-    print('Finish to create the database.')
-    
+def DEBUG_create_and_fill_database():
+    create_and_fill_database('test_data')
+    conn = sqlite3.connect('data.db')
+    c = conn.cursor()
+    c.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    print(c.fetchall())
+
+DEBUG_create_and_fill_database()
