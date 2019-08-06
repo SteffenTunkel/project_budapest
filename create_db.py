@@ -63,8 +63,6 @@ def read_files():
 
                         line_count += 1
 
-            #print(Data[0][3][1]) #DEBUG
-
             # setup for the next iteration. Depending of if defect correction is necessary.
             if defect_1_flag == True:
                 defect_line_offset = defect_line_offset + line_count - 1
@@ -78,33 +76,79 @@ def read_files():
 
     return [Data,Time]
 
-# program test for DEBUG
-#[input_array, time_array] = read_files() #DEBUG
-#print(input_array[0][3][1]) #DEBUG
-#print(time_array[0]) #DEBUG
+def DEBUG_read_files():
+    [data_array, time_array] = read_files() #DEBUG
+    print(data_array[0][3][1]) 
+    print(time_array[0])
+    
 
+def create_and_fill_database():
+    
+    print('This function is overwriting main and time table in case they already exist.')
+    
+    # fill the data into arrays
+    [data_array, time_array] = read_files()
 
-conn = sqlite3.connect('data.db')
-c = conn.cursor()
+    # create or connect to the database
+    conn = sqlite3.connect('data.db')
+    c = conn.cursor()
 
-sql_command_to_create = """
-            CREATE TABLE raw(
-            id INTEGER PRIMARY KEY,
-            x REAL,
-            y REAL,
-            z REAL, 
-            intensity REAL,
-            laser_id REAL,
-            azimuth REAL,
-            distance_m REAL,
-            timestamp REAL
-            )""" # not used if db exists
-# c.execute(sql_command_to_create)
+    sql_command_to_create = """
+                CREATE TABLE main(
+                id INTEGER PRIMARY KEY,
+                frame_no INTEGER,
+                x REAL,
+                y REAL,
+                z REAL, 
+                intensity REAL,
+                laser_id REAL,
+                azimuth REAL,
+                distance_m REAL
+                )""" # not used if db exists
+    # c.execute(sql_command_to_create)
 
-#sql_command_to_fill = """
-#            INSERT INTO raw VALUES("""
-#c.execute(sql_command)
+    sql_command_to_create = """
+                CREATE TABLE time(
+                frame_no INTEGER,
+                timestamp REAL
+                )""" # not used if db exists
+    # c.execute(sql_command_to_create)
 
-conn.commit()
-conn.close()
+    
+    no_frames           = len(data_array)
+    no_points_per_frame = len(data_array[0])   
+    # len(data_array[0][0]) => no_coordinates
+    
+    point_id = 0
+    for i_f in range(no_frames): # i_f: index for frames
+        for i_ppf in range(no_points_per_frame): # i_ppf: index for points per frame
 
+        if data_array[i_f][i_ppf][0] =! 0.0:
+            sql_command_to_fill = """
+                           INSERT INTO main VALUES(
+                                point_id, 
+                                i_f, 
+                                data_array[i_f][i_ppf][0],
+                                data_array[i_f][i_ppf][1],
+                                data_array[i_f][i_ppf][2],
+                                data_array[i_f][i_ppf][3],
+                                data_array[i_f][i_ppf][4],
+                                data_array[i_f][i_ppf][5],
+                                data_array[i_f][i_ppf][6]
+                            )"""
+            c.execute(sql_command_to_fill)
+            point_id = point_id + 1
+            
+        if data_array[i_f][0][0] =! 0.0:
+        sql_command_to_fill = """
+                           INSERT INTO time VALUES(
+                                i_f, 
+                                time_array[i_f]
+                            )"""
+        c.execute(sql_command_to_fill)
+
+    conn.commit()
+    conn.close()
+    
+    print('Finish to create the database.')
+    
