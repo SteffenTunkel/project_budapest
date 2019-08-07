@@ -5,19 +5,25 @@
 import csv
 import os
 import sqlite3
-import timeit
+import time #1234
+import os.path    #1234
+
+
 
 
 def read_files(path):
+    
+    start_time = time.time()
 
-    rstart_time = timeit.timeit()
-
-    no_frames = 10             # bigger than the actual number
+    #no_frames = 10             # bigger than the actual number    #1234
     no_points = 20000           # the actual number is not fixed per frame, but smaller than 20000 in any case
     no_coordinates = 7          # x,y,z -> 3 coordinates per point
     size_threshold = 1520000    # threshold for the detection of defect frames
-    #path ='raw_data'  # path of the folder with the data
+    #path ='raw_data'  # path of the folder with the data -> changed to parameter
 
+    print len([name for name in os.listdir('.') if os.path.isfile(name)])    # DEBUG 1234
+    no_frames = len([name for name in os.listdir('.') if os.path.isfile(name)])    #1234
+    
     # use of the data type range because integer is not iterable
     Data = [[[0 for k in range(no_coordinates)] for j in range(no_points)] for i in range(no_frames)]
 
@@ -77,19 +83,25 @@ def read_files(path):
                 defect_size = 0
                 frame_count += 1
 
-    print("Finished to read in the data. Process took %3.6fs" % (timeit.timeit() - rstart_time))
+    print("Finished to read in the data. Process took %3.6fs" % (time.time() - start_time), end='\n\n') #1234
 
     return [Data,Time]
 
-def DEBUG_read_files():
+
+
+
+
+def test_read_files():
     [data_array, time_array] = read_files() #DEBUG
     print(data_array[0][3][1]) 
     print(time_array[0])
     
+    
 
+    
 def create_and_fill_database(path):
-
-    start_time = timeit.timeit()
+    
+    start_time = time.time()
 
     print('Started creating the database.')
     
@@ -99,7 +111,10 @@ def create_and_fill_database(path):
     # create or connect to the database
     conn = sqlite3.connect('data.db')
     c = conn.cursor()
-
+    
+    sql_command_to_drop = "DROP TABLE IF EXISTS main"    #1234
+    c.execute(sql_command_to_drop)    #1234
+    
     sql_command_to_create = """
                 CREATE TABLE main(
                 id INTEGER PRIMARY KEY,
@@ -114,6 +129,9 @@ def create_and_fill_database(path):
                 )""" # not used if db exists
     c.execute(sql_command_to_create)
 
+    sql_command_to_drop = "DROP TABLE IF EXISTS time"    #1234
+    c.execute(sql_command_to_drop)    #1234
+    
     sql_command_to_create = """
                 CREATE TABLE time(
                 frame_no INTEGER,
@@ -158,13 +176,15 @@ def create_and_fill_database(path):
     conn.close()
 
     print("Finished to create the database. Process took %0.6fs" % (timeit.timeit() - start_time))
-
+    print('Finished to create the database. Process took {:0.6f}s'.format(ende-start), end='\n\n') #1234
     
-def DEBUG_create_and_fill_database():
+    
+    
+def test_create_and_fill_database():
     create_and_fill_database('test_data')
     conn = sqlite3.connect('data.db')
     c = conn.cursor()
     c.execute("SELECT name FROM sqlite_master WHERE type='table';")
     print(c.fetchall())
 
-DEBUG_create_and_fill_database()
+test_create_and_fill_database()
