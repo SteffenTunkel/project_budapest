@@ -1,5 +1,9 @@
 import create_db
+import output
 import statistics
+import sqlite3
+import time
+
 # INTEGER PRIMARY KEY bei der anderen Funktion für frame_no in der time table
 	#Laserid und azimuth nicht real sondern int
 	#allgemeine einstellungen in eine inidatei auslagern
@@ -9,7 +13,7 @@ def find_background(db_name):
 	conn = sqlite3.connect(db_name)
 	c = conn.cursor()
 	
-	sql_command_to_drop = "DROP TABLE IF EXISTS time"    #1234
+	sql_command_to_drop = "DROP TABLE IF EXISTS background"    #1234
 	c.execute(sql_command_to_drop)    #1234
     
 	sql_command_to_create = """CREATE TABLE background(
@@ -26,26 +30,35 @@ def find_background(db_name):
     #c.execute("SELECT * FROM tasks WHERE priority=?", (priority,))
  
     #rows = cur.fetchall()
-		
+	i_azimuth=0
 	for i_azimuth in range(max_azimuth_value):
-		for i_laser_id in range(-max_laser_id_value, max_laser_id_value):	
-			c.execute('SELECT * FROM main WHERE azimuth=? AND laser_id=?', (i_azimuth, i_laser_id)
+		for i_laser_id in range(-max_laser_id_value, max_laser_id_value):
+			#sql_command_to_select = "SELECT * FROM main WHERE "
+			c.execute('SELECT * FROM main ')#WHERE laser_id = 5')
+			#sql_command_to_select += "azimuth='" + str(i_azimuth)+"'"# + ' AND laser_id=' + str(i_laser_id)
+			#c.execute(sql_command_to_select)
 			points = c.fetchall()
 			print(points)
-			#ToDo auf distance zugreifen
+			# ToDo auf distance zugreifen
 			#median_distance=statistics.median(distances)
 		
 				  
 			sql_command_to_fill = 'INSERT INTO background VALUES('
 			sql_command_to_fill += str(i_azimuth) + ','
 			sql_command_to_fill += str(i_laser_id) + ','
-			sql_command_to_fill += str(median_distance) + ')'
+			sql_command_to_fill += str(5) + ')'
 
-            		c.execute(sql_command_to_fill)
+			c.execute(sql_command_to_fill)
 				  
 	conn.commit()
 
-def compare_with_background():
+
+def test_find_background(db_name='data.db'):
+	print("test_function")
+	find_background(db_name)
+
+
+#def compare_with_background():
 # ähnlich zu background finden, alle durchgehen und die einträge mit passendem wert löschen, Toleranz beachten.				  
 				 
-				  
+find_background('data.db')
