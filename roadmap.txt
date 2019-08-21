@@ -1,7 +1,31 @@
+Step1: READ THE DATA
+
 read the data into arrays and fix the broken frames DONE
 create the database and write the laser_scanner_data in one 'main' table DONE
 create a 'time' table with one timestamp for each frame DONE
-create a 'background' table, with the laser_id and azimuth as primary key duo, values are one coordinate set
+
+Step2: FIND THE BACKGROUND
+
+create a 'background' table, with the laser_id and azimuth as primary key duo, one more value (median) needed
 select all coordinates with common laser_id and azimuth and find the median
 save the median coordinate set in the 'background' table
+create a 'moving' table. The definition is the same as 'main' plus the parameter 'object_no', which is all zero at this point
+compare each record in the 'background' table with all the fitting records in 'main'
+If the 'distance' of the the data from 'main' is NOT within a certain tolerance around the median, safe the record in 'moving'
 
+Step3: FIND CLUSTERS
+
+Get all the records for one frame from 'moving' and safe them in an array
+Give the first record the 'object_no' '1'.
+Compare it with all the other records (x,y,z dimensional) and also give that number to all the records within a certain tolerance
+Start over with the next record and give it the 'object_no' '2', if it's still a '0'
+Compare it with all the remaining records (x,y,z) and check if they are within a certain tolerance
+  If so, check if the other record already has a number, if so change all the records with one of the two numbers to the lower on
+...
+All the steps again for each frame
+
+Step4: CALCULATE THE FOCUS
+
+Step5: CALCULATE THE MOVEMENT OF THE FOCUSES
+
+Step6: VISULIZE RESULTS
