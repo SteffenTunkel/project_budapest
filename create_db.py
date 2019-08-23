@@ -155,12 +155,12 @@ def create_and_fill_database(data_path):
                 sql_command_to_fill += str(point_id) + ','
                 sql_command_to_fill += str(i_f) + ','
                 sql_command_to_fill += str(data_array[i_f][i_ppf][0]) + ','
-                sql_command_to_fill += str(data_array[i_f][i_ppf][0]) + ','
-                sql_command_to_fill += str(data_array[i_f][i_ppf][0]) + ','
-                sql_command_to_fill += str(data_array[i_f][i_ppf][0]) + ','
-                sql_command_to_fill += str(data_array[i_f][i_ppf][0]) + ','
-                sql_command_to_fill += str(data_array[i_f][i_ppf][0]) + ','
-                sql_command_to_fill += str(data_array[i_f][i_ppf][0]) + ')'
+                sql_command_to_fill += str(data_array[i_f][i_ppf][1]) + ','
+                sql_command_to_fill += str(data_array[i_f][i_ppf][2]) + ','
+                sql_command_to_fill += str(data_array[i_f][i_ppf][3]) + ','
+                sql_command_to_fill += str(data_array[i_f][i_ppf][4]) + ','
+                sql_command_to_fill += str(data_array[i_f][i_ppf][5]) + ','
+                sql_command_to_fill += str(data_array[i_f][i_ppf][6]) + ')'
 
                 c.execute(sql_command_to_fill)
                 point_id = point_id + 1
