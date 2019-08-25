@@ -44,27 +44,26 @@ def find_background(db_name):
         c.execute("SELECT * FROM main WHERE azimuth=:i_azimuth AND laser_id=:i_laser_id"
                     , {"i_azimuth": i_azimuth, "i_laser_id": i_laser_id})
 
-        points = c.fetchall()
-        if i_azimuth==8 and i_laser_id==4:
-          test_array=points
-          print(test_array)
-          print(test_array[0][8])
-          print(test_array[1][8])
-          #s_array=test_array[]
-          print(statistics.median([6.152, 6.168]))
+        data_array = c.fetchall()
+        #if i_azimuth==8 and i_laser_id==4:
+        distance_array = []
+        median_distance = 0
+        for n in range(len(data_array)):
+          distance_array.append(data_array[n][8])
+          #print(statistics.median(distance_array))
+          median_distance = statistics.median(distance_array)
         #print(points)
-        # ToDo auf distance zugreifen
         #median_distance=statistics.median(distances)
 
-    
         sql_command_to_fill = 'INSERT INTO background VALUES('
         sql_command_to_fill += str(i_azimuth) + ','
         sql_command_to_fill += str(i_laser_id) + ','
-        sql_command_to_fill += str(5) + ')'
+        sql_command_to_fill += str(median_distance) + ')'
 
         c.execute(sql_command_to_fill)
+        conn.commit()
       
-  conn.commit()
+  #conn.commit()
 
 
 def test_find_background(db_name='data.db'):
@@ -75,4 +74,3 @@ def test_find_background(db_name='data.db'):
 #def compare_with_background():
 # ähnlich zu background finden, alle durchgehen und die einträge mit passendem wert löschen, Toleranz beachten.      
      
-test_find_background('data.db')

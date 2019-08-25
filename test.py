@@ -2,7 +2,7 @@ import create_db
 import output
 import find_background
 
-#output.test_print_table('data.db', 'main')
+output.test_print_table('data.db', 'time')
 
 #output.test_get_table('data.db', 'main')
 
@@ -11,4 +11,4 @@ import find_background
 
 #create_db.test_read_files()
 
-find_background.test_find_background()
+#find_background.test_find_background()
