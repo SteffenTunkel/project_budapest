@@ -1,10 +1,11 @@
 import sqlite3
 import time
 import create_db
+import init
 
 
 
-def print_table(db_name, table_name):
+def print_table(table_name, db_name=init.db_name):
     start_time = time.time()
 
     conn = sqlite3.connect(db_name)

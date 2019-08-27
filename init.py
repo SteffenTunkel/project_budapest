@@ -15,7 +15,7 @@ size_threshold = 1520000    # threshold for the detection of defect frames
 # find the background
 max_azimuth_value=14 ## default 36000
 max_laser_id_value=15
-backgnd_tol=0.5
+backgnd_tol=0.01	## defalut 0.5
 
 # find point clouds
 cloud_tol=0.1

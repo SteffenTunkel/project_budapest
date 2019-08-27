@@ -7,6 +7,7 @@ import os
 import sqlite3
 import time
 import os.path    #1234
+import init
 
 
 
@@ -16,7 +17,7 @@ def read_files(data_path):
     start_time = time.time()
 
     no_frames = init.no_frames           # bigger than the actual number    #1234
-    no_points = init.no.points           # the actual number is not fixed per frame, but smaller than 20000 in any case
+    no_points = init.no_points           # the actual number is not fixed per frame, but smaller than 20000 in any case
     no_coordinates = init.no_coordinates # x,y,z -> 3 coordinates per point
     size_threshold = init.size_threshold # threshold for the detection of defect frames
     #data_path ='raw_data'  # data_path of the folder with the data -> changed to parameter

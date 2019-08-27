@@ -1,0 +1,10 @@
+{
+	"sqltools.connections": [
+		{
+			"database": ".\\data.db",
+			"dialect": "SQLite",
+			"name": "project_bp_database"
+		}
+	],
+	"sqltools.useNodeRuntime": true
+}
