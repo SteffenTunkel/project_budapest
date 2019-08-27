@@ -1,3 +1,2 @@
 get rid of dependency of no_vars
-delete database automatically when creating a new one
-fix timer problem
+try if there is a run time advantage depending on where the db commits are, like how often.
