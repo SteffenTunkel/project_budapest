@@ -1,2 +1,6 @@
 get rid of dependency of no_vars
-try if there is a run time advantage depending on where the db commits are, like how often.
+
+ideas for run-time-optimization
+  where to put the db commits, try to put less
+  check the tasks in the interlaced loops
+  check somehow how many cycles are needed exactly and do not just use like '700'
