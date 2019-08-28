@@ -3,11 +3,11 @@ import math
 import sqlite3
 import output
 
-def find_point_clouds():
+def find_point_clouds(db_name):
 	KEY = 9
 	value = 0
 	# connect to the database
-	conn = sqlite3.connect('data.db')
+	conn = sqlite3.connect(db_name)
 	c = conn.cursor()
 	for f in range(init.no_frames):
 		c.execute("SELECT * FROM moving WHERE frame_no=:i_frame",{'i_frame': f})
@@ -54,9 +54,9 @@ def find_point_clouds():
 
 
 
-def test_find_point_clouds():
+def test_find_point_clouds(db_name=init.db_name):
 	print('testing: find_point_clouds')
-	find_point_clouds()
+	find_point_clouds(db_name)
 	output.print_table('moving')
 
 	#def sort_clouds():
@@ -68,5 +68,3 @@ def test_find_point_clouds():
 
 
 	# def all the test functions
-
-
