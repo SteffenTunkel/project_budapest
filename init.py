@@ -1,7 +1,7 @@
 # init values for parameters
 
 # data path
-data_path   = 'test_data' # Folder w the laser scanner data ## default 'raw_data'
+data_path   = 'raw_data' # Folder w the laser scanner data ## default 'raw_data'
 db_name     = 'data.db' ## default 'data.db'
 
 

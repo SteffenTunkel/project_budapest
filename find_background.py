@@ -161,16 +161,26 @@ def compare_with_background(db_name):
 	i_azimuth = 0
 	i_laser_id = 0
 	i_key = 0
-
+	n = 0
+	t = 500 #DEBUG
+	five_time=time.time() #DEBUG
 	for i in range (len(background_array)):
+
+		
 		#B_time = time.time()
 		i_az = background_array[i][0]
 		i_lid = background_array[i][1]
 		median = background_array[i][2]
 
+		if i_az == t: #DEBUG
+			print(str(i_az) + '\t' + str(time.time()-five_time)) #DEBUG
+			t = t + 500 #DEBUG
+			five_time=time.time() #DEBUG
+
+
 		same_az_array = []
 		same_azimuth_flag = True
-		n = 0
+		
 		while same_azimuth_flag == True:
 			if main_array[n][7] == i_azimuth:
 				same_az_array.append(main_array[n])
@@ -184,7 +194,7 @@ def compare_with_background(db_name):
 		if break_flag == True:
 			break
 
-		for i_laser_id in range(0, init.max_laser_id_value+1):
+		for i_laser_id in range(init.max_laser_id_value+1):
 			same_lid_array = []
 			for m in range(len(same_az_array)):
 				if same_az_array[m][6] == i_laser_id:
@@ -192,6 +202,10 @@ def compare_with_background(db_name):
 	
 			# compare the distance of each record with the median
 			for n in range(len(same_lid_array)):
+
+				if abs( same_lid_array[n][8] - median) != 0:
+					print(abs( same_lid_array[n][8] - median))
+
 				#print(abs( same_lid_array[n][8] - median)) #DEBUG
 				if abs( same_lid_array[n][8] - median) >= init.backgnd_tol:
 					
@@ -218,12 +232,12 @@ def test_find_background(db_name=init.db_name):
 	print('testing: find_background')
 	find_background(db_name)
 
-	conn = sqlite3.connect(db_name)
-	c = conn.cursor()
+	# conn = sqlite3.connect(db_name)
+	# c = conn.cursor()
 
-	c.execute(sql_command_to_select)
-	array=c.fetchall()
-	print(array)
+	# c.execute(sql_command_to_select)
+	# array=c.fetchall()
+	# print(array)
 
 def test_compare_with_background(db_name=init.db_name):
 	print('testing: compare_with_background')

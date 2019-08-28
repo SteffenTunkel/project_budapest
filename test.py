@@ -11,7 +11,7 @@ import point_cloud
 
 #create_db.test_create_and_fill_database()
 
-#find_background_idea.test_find_background()
+#find_background.test_find_background()
 
 find_background.test_compare_with_background()
 
