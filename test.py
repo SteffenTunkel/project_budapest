@@ -7,13 +7,12 @@ import point_cloud
 
 #output.test_get_table('data.db', 'main')
 
+#create_db.test_read_files()
 
 #create_db.test_create_and_fill_database()
 
-#create_db.test_read_files()
+#find_background_idea.test_find_background()
 
-#find_background.test_find_background()
+find_background.test_compare_with_background()
 
-#find_background.test_compare_with_background()
-
-point_cloud.find_point_clouds()
+#point_cloud.test_find_point_clouds()
