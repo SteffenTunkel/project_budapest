@@ -1,4 +1,3 @@
-
 # This code is for reading out the .csv files and putting them in to 1 3D Array.
 # Also the defect data files, in terms of that one frame is split on multiple files, have to be repaired.
 
@@ -66,6 +65,7 @@ def read_files(data_path):
                             Time[frame_count] = float(row[7])
 
                         # filling the data array
+                        #print('DEBUG fc:%d\tlc+dlo-1:%d', (frame_count,line_count+defect_line_offset-1))#DEBUG
                         Data[frame_count][line_count+defect_line_offset-1][0]=float(row[0])
                         Data[frame_count][line_count+defect_line_offset-1][1]=float(row[1])
                         Data[frame_count][line_count+defect_line_offset-1][2]=float(row[2])
@@ -79,11 +79,11 @@ def read_files(data_path):
             # setup for the next iteration. Depending of if defect correction is necessary.
             if defect_1_flag == True:
                 defect_line_offset = defect_line_offset + line_count - 1
-                #print(defect_line_offset) #DEBUG
             else:
                 defect_line_offset = 0
                 defect_size = 0
                 frame_count += 1
+                print('frame_count:', (frame_count,line_count+defect_line_offset-1))#DEBUG
 
     print("Finished to read in the data. Process took %3.3fs" % (time.time() - start_time))
 
@@ -93,7 +93,7 @@ def read_files(data_path):
 
 
 
-def test_read_files(data_path='test_data'):
+def test_read_files(data_path=init.data_path):
     [data_array, time_array] = read_files(data_path) #DEBUG
     print(data_array[0][3][1]) 
     print(time_array[0])
@@ -101,7 +101,7 @@ def test_read_files(data_path='test_data'):
     
 
     
-def create_and_fill_database(data_path):
+def create_and_fill_database(db_name, data_path):
     
     start_time = time.time()
 
@@ -111,7 +111,7 @@ def create_and_fill_database(data_path):
     [data_array, time_array] = read_files(data_path)
 
     # create or connect to the database
-    conn = sqlite3.connect('data.db')
+    conn = sqlite3.connect(db_name)
     c = conn.cursor()
     
     sql_command_to_drop = "DROP TABLE IF EXISTS main"
@@ -182,11 +182,10 @@ def create_and_fill_database(data_path):
     
     
     
-def test_create_and_fill_database(db_name='data.db'):
-    create_and_fill_database('test_data')
+def test_create_and_fill_database(db_name=init.db_name, data_path=init.data_path):
+    print('testing: create_and_fill_database')
+    create_and_fill_database(db_name, data_path)
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
     c.execute("SELECT name FROM sqlite_master WHERE type='table';")
     print(c.fetchall())
-
-
