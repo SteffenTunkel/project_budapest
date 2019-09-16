@@ -12,8 +12,8 @@ def find_background(db_name):
 	# open db and create a new table
 	conn = sqlite3.connect(db_name)
 	c = conn.cursor()
-	sql_command_to_drop = "DROP TABLE IF EXISTS background" 
-	c.execute(sql_command_to_drop)  
+	sql_command_to_drop = "DROP TABLE IF EXISTS background"
+	c.execute(sql_command_to_drop)
 	sql_command_to_create = """CREATE TABLE background(
 				azimuth INTEGER NOT NULL,
 	laser_id INTEGER NOT NULL,
@@ -88,9 +88,9 @@ def find_background(db_name):
 				sql_command_to_fill = 'INSERT INTO background VALUES('
 				sql_command_to_fill += str(i_azimuth) + ','
 				sql_command_to_fill += str(i_laser_id) + ','
-				sql_command_to_fill += "NULL" + ')'		
-			
-			c.execute(sql_command_to_fill)		
+				sql_command_to_fill += "NULL" + ')'
+
+			c.execute(sql_command_to_fill)
 	conn.commit()
 		#print('F time: ' + str(time.time()-E_time))
 
@@ -108,7 +108,7 @@ def compare_with_background(db_name):
 	# connect to the database
 	conn = sqlite3.connect(db_name)
 	c = conn.cursor()
-	
+
 	# create a new table for the not background, means moving objects
 	sql_command_to_drop = "DROP TABLE IF EXISTS moving"
 	c.execute(sql_command_to_drop)
@@ -118,7 +118,7 @@ def compare_with_background(db_name):
 				frame_no INTEGER,
 				x REAL,
 				y REAL,
-				z REAL, 
+				z REAL,
 				intensity REAL,
 				laser_id INTEGER,
 				azimuth INTEGER,
@@ -158,62 +158,84 @@ def compare_with_background(db_name):
 
 	same_azimuth_flag = True
 	break_flag = False
-	i_azimuth = 0
+	#i_azimuth = 0
 	i_laser_id = 0
 	i_key = 0
-
+	i_az = -1
+	i_lid = -1
+	n = 0
+	p_dbg = 50000 # DEBUG
 	for i in range (len(background_array)):
-		#B_time = time.time()
-		i_az = background_array[i][0]
-		i_lid = background_array[i][1]
+		if i == p_dbg: # DEBUG
+			print(i) # DEBUG
+			p_dbg += 50000 # DEBUG
 		median = background_array[i][2]
+		if median != None:
+			if i_az != background_array[i][0]:
 
-		same_az_array = []
-		same_azimuth_flag = True
-		n = 0
-		while same_azimuth_flag == True:
-			if main_array[n][7] == i_azimuth:
-				same_az_array.append(main_array[n])
-				n = n + 1
-				if n == len(main_array):
-					break_flag = True
-					break
-			else:
-				same_azimuth_flag = False
+				i_az = background_array[i][0]
 
-		if break_flag == True:
-			break
+				same_az_array = []
+				same_azimuth_flag = True
 
-		for i_laser_id in range(0, init.max_laser_id_value+1):
+				while same_azimuth_flag == True:
+					if main_array[n][7] == i_az:
+						same_az_array.append(main_array[n])
+						n = n + 1
+						if n == len(main_array):
+							break_flag = True
+							break
+					else:
+						same_azimuth_flag = False
+
+				#if break_flag == True:
+				#		break
+
+			i_lid = background_array[i][1]
 			same_lid_array = []
-			for m in range(len(same_az_array)):
-				if same_az_array[m][6] == i_laser_id:
+			same_lid_flag = True
+			m = 0
+			if same_az_array == []:
+					same_lid_flag = False
+
+			same_az_array = sorted(same_az_array, key=lambda x: x[6])
+
+			while same_lid_flag == True:
+				if same_az_array[m][6] == i_lid:
 					same_lid_array.append(same_az_array[m])
-	
+					m = m + 1
+					if m == len(same_az_array):
+						break_flag_2 = True # ggf gar nicht benötigt
+						break
+				else:
+					same_lid_flag = False
+
 			# compare the distance of each record with the median
-			for n in range(len(same_lid_array)):
+			for j in range(len(same_lid_array)):
 				#print(abs( same_lid_array[n][8] - median)) #DEBUG
-				if abs( same_lid_array[n][8] - median) >= init.backgnd_tol:
-					
+				if abs( same_lid_array[j][8] - median) >= init.backgnd_tol:
+					#print (str(median)+"\t"+str(abs( same_lid_array[j][8] - median)))
 					# copy the data from the main record to the moving one. But with a new key.
 					sql_command_to_fill = 'INSERT INTO moving VALUES('
 					sql_command_to_fill += str(i_key) + ','
-					sql_command_to_fill += str(main_array[n][1]) + ','
-					sql_command_to_fill += str(main_array[n][2]) + ','
-					sql_command_to_fill += str(main_array[n][3]) + ','
-					sql_command_to_fill += str(main_array[n][4]) + ','
-					sql_command_to_fill += str(main_array[n][5]) + ','
-					sql_command_to_fill += str(main_array[n][6]) + ','
-					sql_command_to_fill += str(main_array[n][7]) + ','
-					sql_command_to_fill += str(main_array[n][8]) + ','
+					sql_command_to_fill += str(same_lid_array[j][1]) + ','
+					sql_command_to_fill += str(same_lid_array[j][2]) + ','
+					sql_command_to_fill += str(same_lid_array[j][3]) + ','
+					sql_command_to_fill += str(same_lid_array[j][4]) + ','
+					sql_command_to_fill += str(same_lid_array[j][5]) + ','
+					sql_command_to_fill += str(same_lid_array[j][6]) + ','
+					sql_command_to_fill += str(same_lid_array[j][7]) + ','
+					sql_command_to_fill += str(same_lid_array[j][8]) + ','
 					sql_command_to_fill += "NULL" + ')'
-					c.execute(sql_command_to_fill)					
+					c.execute(sql_command_to_fill)
 					i_key = i_key + 1
+
+
 
 		#print('B time: ' + str(time.time()-B_time)) #DEBUG'
 	conn.commit()
 	print('total time:'+ str(time.time()-tot_time)) #DEBUG
-						
+
 def test_find_background(db_name=init.db_name):
 	print('testing: find_background')
 	find_background(db_name)
@@ -221,9 +243,9 @@ def test_find_background(db_name=init.db_name):
 	conn = sqlite3.connect(db_name)
 	c = conn.cursor()
 
-	c.execute(sql_command_to_select)
-	array=c.fetchall()
-	print(array)
+	# c.execute(sql_command_to_select)
+	# array=c.fetchall()
+	# print(array)
 
 def test_compare_with_background(db_name=init.db_name):
 	print('testing: compare_with_background')
@@ -232,7 +254,7 @@ def test_compare_with_background(db_name=init.db_name):
 
 	conn = sqlite3.connect(db_name)
 	c = conn.cursor()
-	
+
 	#output.print_table('moving')
 	# sql_command_to_select = "SELECT * FROM " + "background WHERE azimuth=12 AND laser_id=5"
 	# c.execute(sql_command_to_select)
