@@ -9,6 +9,8 @@ def find_background(db_name):
 	tot_time = time.time() #DEBUG
 	R_time=time.time() #DEBUG
 
+
+
 	# open db and create a new table
 	conn = sqlite3.connect(db_name)
 	c = conn.cursor()
@@ -23,6 +25,8 @@ def find_background(db_name):
 	c.execute(sql_command_to_create)
 	conn.commit()
 
+
+
 	# get values from main
 	c.execute("SELECT * FROM main")
 	data_array = c.fetchall()
@@ -31,9 +35,11 @@ def find_background(db_name):
 	A_time=time.time() #DEBUG
 
 	# sort main array by azimuth
-	sort_array = sorted(data_array, key=lambda x: x[7])
+	sorted_array = sorted(data_array, key=lambda x: x[7])
 
 	print('A time: ' + str(time.time()-A_time)) #DEBUG
+
+
 
 	break_flag = False
 	main_id = 0
@@ -48,10 +54,10 @@ def find_background(db_name):
 		same_az_array = []
 		same_azimuth_flag = True
 		while same_azimuth_flag == True:
-			if sort_array[main_id][7] == i_azimuth:
-				same_az_array.append(sort_array[main_id])
+			if sorted_array[main_id][7] == i_azimuth:
+				same_az_array.append(sorted_array[main_id])
 				main_id = main_id + 1
-				if main_id == len(sort_array):
+				if main_id == len(sorted_array):
 					break_flag = True
 					break
 			else:
@@ -65,7 +71,6 @@ def find_background(db_name):
 			for m in range(len(same_az_array)):
 				if same_az_array[m][6] == i_laser_id:
 					same_lid_array.append(same_az_array[m])
-
 
 
 
@@ -140,6 +145,7 @@ def compare_with_background(db_name):
 	print('R time: ' + str(time.time()-R_time)) #DEBUG
 	A_time=time.time() #DEBUG
 
+
 	# sort main array by azimuth
 	main_array = sorted(main_array_unsorted, key=lambda x: x[7])
 
@@ -159,52 +165,60 @@ def compare_with_background(db_name):
 	same_azimuth_flag = True
 	break_flag = False
 	#i_azimuth = 0
-	i_laser_id = 0
+	debug_counter = 0
 	i_key = 0
 	i_az = -1
-	i_lid = -1
-	n = 0
+	i_laser_id = -1
+	full_arr_counter = 0
+	same_az_counter = 0
 	p_dbg = 50000 # DEBUG
 	for i in range (len(background_array)):
 		if i == p_dbg: # DEBUG
 			print(i) # DEBUG
 			p_dbg += 50000 # DEBUG
+
+		if break_flag == True:
+			break
 		median = background_array[i][2]
 		if median != None:
 			if i_az != background_array[i][0]:
 
 				i_az = background_array[i][0]
-
-				same_az_array = []
+				same_az_counter = 0 
+				same_az_array_unsorted = []
 				same_azimuth_flag = True
 
 				while same_azimuth_flag == True:
-					if main_array[n][7] == i_az:
-						same_az_array.append(main_array[n])
-						n = n + 1
-						if n == len(main_array):
+					if main_array[full_arr_counter][7] == i_az:
+						same_az_array_unsorted.append(main_array[full_arr_counter])
+						full_arr_counter = full_arr_counter + 1
+						if full_arr_counter == len(main_array):
 							break_flag = True
 							break
 					else:
 						same_azimuth_flag = False
 
-				#if break_flag == True:
-				#		break
+				same_az_array = sorted(same_az_array_unsorted, key=lambda x: x[6])
 
-			i_lid = background_array[i][1]
+
+				
+
+			i_laser_id = background_array[i][1]
 			same_lid_array = []
 			same_lid_flag = True
-			m = 0
-			if same_az_array == []:
-					same_lid_flag = False
 
-			same_az_array = sorted(same_az_array, key=lambda x: x[6])
+
+			
+			#print(str(i_laser_id) + '\t im Durchlauf: ' + str(i) + '\t Länge des azi Arrays: ' + str(len(same_az_array)))#DEBUG
+			#print(same_az_array) #DEBUG
 
 			while same_lid_flag == True:
-				if same_az_array[m][6] == i_lid:
-					same_lid_array.append(same_az_array[m])
-					m = m + 1
-					if m == len(same_az_array):
+				
+				if same_az_array[same_az_counter][6] == i_laser_id:
+					#print('\n********************* ' +str(same_az_array[same_az_counter][6]) + ' ***************************************\n\n')#DEBUG
+					same_lid_array.append(same_az_array[same_az_counter])
+					same_az_counter = same_az_counter + 1
+					if same_az_counter == len(same_az_array):
 						break_flag_2 = True # ggf gar nicht benötigt
 						break
 				else:
@@ -212,7 +226,6 @@ def compare_with_background(db_name):
 
 			# compare the distance of each record with the median
 			for j in range(len(same_lid_array)):
-				#print(abs( same_lid_array[n][8] - median)) #DEBUG
 				if abs( same_lid_array[j][8] - median) >= init.backgnd_tol:
 					#print (str(median)+"\t"+str(abs( same_lid_array[j][8] - median)))
 					# copy the data from the main record to the moving one. But with a new key.
