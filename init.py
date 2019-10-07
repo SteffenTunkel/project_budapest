@@ -19,3 +19,6 @@ backgnd_tol=0.2	## defalut 0.5
 
 # find point clouds
 cloud_tol=1.0
+
+# visualize frames
+frame_comprise = 100 ## default 1
