@@ -1,17 +1,3 @@
-point_cloud.py
-Gestern
-Mo. 23:09
-S
-Sie haben ein Element bearbeitet
-Text
-point_cloud.py
-Letzten Monat
-27. Sept.
-S
-Sie haben ein Element hochgeladen
-Text
-point_cloud.py
-
 import init
 import math
 import sqlite3
