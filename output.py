@@ -1,17 +1,3 @@
-output.py
-Gestern
-Mo. 23:10
-S
-Sie haben ein Element bearbeitet
-Text
-output.py
-Letzten Monat
-27. Sept.
-S
-Sie haben ein Element hochgeladen
-Text
-output.py
-
 import sqlite3
 import time
 import create_db
